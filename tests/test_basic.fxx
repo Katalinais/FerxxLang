@@ -1,0 +1,27 @@
+# Prueba lexica de FerxxLang
+
+luka x = 10;
+vuelto pi = 3.14;
+frase nombre = "ferxxo";
+firme activo = firme_si;
+
+si_ve (x >= 5) {
+    diga(nombre);
+} o_si_no {
+    vuelva firme_no;
+}
+
+siga_pues (x > 0) {
+    x = x - 1;
+}
+
+haga calcular(luka n) {
+    vuelva n ^ 2;
+}
+
+combo numeros;
+parche Artista;
+llave config;
+
+# error intencional
+@
