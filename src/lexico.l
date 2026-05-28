@@ -23,6 +23,8 @@ FLOTANTE    {DIGITO}+\.{DIGITO}+
 "combo"                 { printf("Tipo:      %s\n", yytext); }
 "parche"                { printf("Tipo:      %s\n", yytext); }
 "parcero"               { printf("Tipo:      %s\n", yytext); }
+"fila"                  { printf("Tipo:      %s\n", yytext); }
+"cuadro"                { printf("Tipo:      %s\n", yytext); }
 
 "si_ve"                 { printf("Reservada: %s\n", yytext); }
 "o_si_no"               { printf("Reservada: %s\n", yytext); }
@@ -33,6 +35,15 @@ FLOTANTE    {DIGITO}+\.{DIGITO}+
 "diga"                  { printf("Reservada: %s\n", yytext); }
 "responda"              { printf("Reservada: %s\n", yytext); }
 "paila"                 { printf("Reservada: %s\n", yytext); }
+"segun"                 { printf("Reservada: %s\n", yytext); }
+"toca"                  { printf("Reservada: %s\n", yytext); }
+"ensaye"                { printf("Reservada: %s\n", yytext); }
+"ojo_pues"              { printf("Reservada: %s\n", yytext); }
+"cuadre"                { printf("Reservada: %s\n", yytext); }
+"sume"                  { printf("Reservada: %s\n", yytext); }
+"multiplique"           { printf("Reservada: %s\n", yytext); }
+"el_mas"                { printf("Reservada: %s\n", yytext); }
+"el_menos"              { printf("Reservada: %s\n", yytext); }
 
 "de_una"                { printf("Bool:      %s\n", yytext); }
 "nel"                   { printf("Bool:      %s\n", yytext); }
@@ -55,6 +66,7 @@ FLOTANTE    {DIGITO}+\.{DIGITO}+
 "*"                     { printf("Operador:  %s\n", yytext); }
 "/"                     { printf("Operador:  %s\n", yytext); }
 "^"                     { printf("Operador:  %s\n", yytext); }
+"%"                     { printf("Operador:  %s\n", yytext); }
 
 "="                     { printf("Asignac.:  %s\n", yytext); }
 
@@ -62,6 +74,9 @@ FLOTANTE    {DIGITO}+\.{DIGITO}+
 ")"                     { printf("Paren.:    %s\n", yytext); }
 "{"                     { printf("Bloque:    %s\n", yytext); }
 "}"                     { printf("Bloque:    %s\n", yytext); }
+"["                     { printf("Corchete:  %s\n", yytext); }
+"]"                     { printf("Corchete:  %s\n", yytext); }
+":"                     { printf("DosPuntos\n"); }
 ";"                     { printf("PuntoComa\n"); }
 ","                     { printf("Coma\n"); }
 
