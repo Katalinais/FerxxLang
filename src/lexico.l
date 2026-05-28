@@ -12,33 +12,43 @@ LIT_FLOAT   {DIGITO}+\.{DIGITO}+
 
 %%
 
-"int"           { return INT; }
-"float"         { return FLOAT; }
-"bool"          { return BOOL; }
-"string"        { return STRING; }
-"vector"        { return VECTOR; }
-"matriz"        { return MATRIZ; }
+"#"[^\n]*       { }
+"//"[^\n]*      { }
 
-"if"            { return IF; }
-"else"          { return ELSE; }
-"while"         { return WHILE; }
-"for"           { return FOR; }
-"switch"        { return SWITCH; }
-"case"          { return CASE; }
-"func"          { return FUNC; }
-"return"        { return RETURN; }
-"print"         { return PRINT; }
-"input"         { return INPUT; }
-"try"           { return TRY; }
-"catch"         { return CATCH; }
-"assert"        { return ASSERT; }
-"sum"           { return SUM; }
-"prod"          { return PROD; }
-"max"           { return MAX; }
-"min"           { return MIN; }
+"luka"          { return INT; }
+"vuelto"        { return FLOAT; }
+"firme"         { return BOOL; }
+"frase"         { return STRING; }
+"combo"         { return VECTOR; }
+"parche"        { return MATRIZ; }
+"parcero"       { return CLASS; }
+"fila"          { return LIST; }
+"cuadro"        { return GRID; }
+"llave"         { return MAP; }
 
-"true"          { return LIT_BOOL; }
-"false"         { return LIT_BOOL; }
+"si_ve"         { return IF; }
+"o_si_no"       { return ELSE; }
+"siga_pues"     { return WHILE; }
+"dele"          { return FOR; }
+"segun"         { return SWITCH; }
+"toca"          { return CASE; }
+"haga"          { return FUNC; }
+"vuelva"        { return RETURN; }
+"diga"          { return PRINT; }
+"responda"      { return INPUT; }
+"ensaye"        { return TRY; }
+"ojo_pues"      { return CATCH; }
+"paila"         { return THROW; }
+"cuadre"        { return ASSERT; }
+"sume"          { return SUM; }
+"multiplique"   { return PROD; }
+"el_mas"        { return MAX; }
+"el_menos"      { return MIN; }
+
+"firme_si"      { return LIT_BOOL; }
+"firme_no"      { return LIT_BOOL; }
+"de_una"        { return LIT_BOOL; }
+"nel"           { return LIT_BOOL; }
 
 {LIT_FLOAT}     { return LIT_FLOAT; }
 {LIT_INT}       { return LIT_INT; }
