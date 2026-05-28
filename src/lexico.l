@@ -1,105 +1,78 @@
-%option noyywrap
+%option noyywrap yylineno
 %{
 #include <stdio.h>
-
-extern FILE *yyin;
+#include "sintaxis.tab.h"
 %}
 
 DIGITO      [0-9]
 LETRA       [a-zA-Z_]
 ID          {LETRA}({LETRA}|{DIGITO})*
-ENTERO      {DIGITO}+
-FLOTANTE    {DIGITO}+\.{DIGITO}+
+LIT_INT     {DIGITO}+
+LIT_FLOAT   {DIGITO}+\.{DIGITO}+
 
 %%
 
-"#"[^\n]*               { }
-"//"[^\n]*              { }
+"int"           { return INT; }
+"float"         { return FLOAT; }
+"bool"          { return BOOL; }
+"string"        { return STRING; }
+"vector"        { return VECTOR; }
+"matriz"        { return MATRIZ; }
 
-"frase"                 { printf("Tipo:      %s\n", yytext); }
-"luka"                  { printf("Tipo:      %s\n", yytext); }
-"vuelto"                { printf("Tipo:      %s\n", yytext); }
-"firme"                 { printf("Tipo:      %s\n", yytext); }
-"combo"                 { printf("Tipo:      %s\n", yytext); }
-"parche"                { printf("Tipo:      %s\n", yytext); }
-"parcero"               { printf("Tipo:      %s\n", yytext); }
-"fila"                  { printf("Tipo:      %s\n", yytext); }
-"cuadro"                { printf("Tipo:      %s\n", yytext); }
+"if"            { return IF; }
+"else"          { return ELSE; }
+"while"         { return WHILE; }
+"for"           { return FOR; }
+"switch"        { return SWITCH; }
+"case"          { return CASE; }
+"func"          { return FUNC; }
+"return"        { return RETURN; }
+"print"         { return PRINT; }
+"input"         { return INPUT; }
+"try"           { return TRY; }
+"catch"         { return CATCH; }
+"assert"        { return ASSERT; }
+"sum"           { return SUM; }
+"prod"          { return PROD; }
+"max"           { return MAX; }
+"min"           { return MIN; }
 
-"si_ve"                 { printf("Reservada: %s\n", yytext); }
-"o_si_no"               { printf("Reservada: %s\n", yytext); }
-"siga_pues"             { printf("Reservada: %s\n", yytext); }
-"dele"                  { printf("Reservada: %s\n", yytext); }
-"haga"                  { printf("Reservada: %s\n", yytext); }
-"vuelva"                { printf("Reservada: %s\n", yytext); }
-"diga"                  { printf("Reservada: %s\n", yytext); }
-"responda"              { printf("Reservada: %s\n", yytext); }
-"paila"                 { printf("Reservada: %s\n", yytext); }
-"segun"                 { printf("Reservada: %s\n", yytext); }
-"toca"                  { printf("Reservada: %s\n", yytext); }
-"ensaye"                { printf("Reservada: %s\n", yytext); }
-"ojo_pues"              { printf("Reservada: %s\n", yytext); }
-"cuadre"                { printf("Reservada: %s\n", yytext); }
-"sume"                  { printf("Reservada: %s\n", yytext); }
-"multiplique"           { printf("Reservada: %s\n", yytext); }
-"el_mas"                { printf("Reservada: %s\n", yytext); }
-"el_menos"              { printf("Reservada: %s\n", yytext); }
+"true"          { return LIT_BOOL; }
+"false"         { return LIT_BOOL; }
 
-"de_una"                { printf("Bool:      %s\n", yytext); }
-"nel"                   { printf("Bool:      %s\n", yytext); }
+{LIT_FLOAT}     { return LIT_FLOAT; }
+{LIT_INT}       { return LIT_INT; }
 
-{FLOTANTE}              { printf("Flotante:  %s\n", yytext); }
-{ENTERO}                { printf("Entero:    %s\n", yytext); }
+\"[^\"]*\"      { return LIT_STRING; }
 
-\"[^\"]*\"              { printf("String:    %s\n", yytext); }
+{ID}            { return ID; }
 
-{ID}                    { printf("Identif.:  %s\n", yytext); }
+"=="            { return EQ; }
+"!="            { return NEQ; }
+"<="            { return LEQ; }
+">="            { return GEQ; }
+"<"             { return LT; }
+">"             { return GT; }
+"+"             { return PLUS; }
+"-"             { return MINUS; }
+"*"             { return TIMES; }
+"/"             { return DIV; }
+"%"             { return MOD; }
+"^"             { return POW; }
+"="             { return ASSIGN; }
 
-"=="                    { printf("Operador:  %s\n", yytext); }
-"!="                    { printf("Operador:  %s\n", yytext); }
-"<="                    { printf("Operador:  %s\n", yytext); }
-">="                    { printf("Operador:  %s\n", yytext); }
-"<"                     { printf("Operador:  %s\n", yytext); }
-">"                     { printf("Operador:  %s\n", yytext); }
-"+"                     { printf("Operador:  %s\n", yytext); }
-"-"                     { printf("Operador:  %s\n", yytext); }
-"*"                     { printf("Operador:  %s\n", yytext); }
-"/"                     { printf("Operador:  %s\n", yytext); }
-"^"                     { printf("Operador:  %s\n", yytext); }
-"%"                     { printf("Operador:  %s\n", yytext); }
+"("             { return LPAREN; }
+")"             { return RPAREN; }
+"{"             { return LBRACE; }
+"}"             { return RBRACE; }
+"["             { return LBRACKET; }
+"]"             { return RBRACKET; }
+";"             { return SEMI; }
+","             { return COMMA; }
+":"             { return COLON; }
 
-"="                     { printf("Asignac.:  %s\n", yytext); }
+[ \t\n]+        { }
 
-"("                     { printf("Paren.:    %s\n", yytext); }
-")"                     { printf("Paren.:    %s\n", yytext); }
-"{"                     { printf("Bloque:    %s\n", yytext); }
-"}"                     { printf("Bloque:    %s\n", yytext); }
-"["                     { printf("Corchete:  %s\n", yytext); }
-"]"                     { printf("Corchete:  %s\n", yytext); }
-":"                     { printf("DosPuntos\n"); }
-";"                     { printf("PuntoComa\n"); }
-","                     { printf("Coma\n"); }
-
-[ \t\n]+                { }
-
-.                       { printf("Error lexico: '%c'\n", *yytext); }
+.               { fprintf(stderr, "Error lexico en linea %d: '%c'\n", yylineno, *yytext); }
 
 %%
-
-int main(int argc, char **argv) {
-    if (argc > 1) {
-        yyin = fopen(argv[1], "r");
-        if (!yyin) {
-            fprintf(stderr, "No se pudo abrir: %s\n", argv[1]);
-            return 1;
-        }
-    } else {
-        yyin = stdin;
-        printf("FerxxLang Lexer (Ctrl+D para terminar):\n");
-    }
-
-    yylex();
-
-    if (yyin != stdin) fclose(yyin);
-    return 0;
-}
