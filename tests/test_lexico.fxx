@@ -1,0 +1,85 @@
+# Test lexico completo — cubre todos los tokens de FerxxLang
+
+# Tipos de dato
+luka x = 10;
+vuelto pi = 3.14;
+frase saludo = "parcero";
+frase otro = 'bacano';
+firme activo = firme_si;
+firme falso = nel;
+firme verdad = de_una;
+firme apagado = firme_no;
+
+# Tipos compuestos
+combo nums;
+parche cuadricula;
+fila elementos;
+llave config;
+cuadro tablero;
+
+# Control de flujo
+si_ve (x > 0) {
+    diga(x);
+} o_si_no {
+    diga("cero");
+}
+
+siga_pues (x > 0) {
+    x = x - 1;
+}
+
+dele (luka i = 0; i < 10; i = i + 1) {
+    diga(i);
+}
+
+segun (x) {
+    toca 1: diga("uno");
+    toca 2: diga("dos");
+}
+
+# Funciones
+haga suma(luka a, luka b) {
+    vuelva a + b;
+}
+
+responda();
+
+# Manejo de errores
+ensaye {
+    cuadre(pi > 0, "pi positivo");
+} ojo_pues (e) {
+    paila e;
+}
+
+# Operadores logicos — palabras clave
+si_ve (activo y_es x > 0) { diga("si"); }
+si_ve (falso o_bien verdad) { diga("ok"); }
+si_ve (no_es falso) { diga("not"); }
+
+# Operadores logicos — simbolos
+si_ve (activo && x > 0) { diga("and"); }
+si_ve (falso || verdad)  { diga("or"); }
+si_ve (!falso)           { diga("not2"); }
+
+# Operadores aritmeticos y relacionales
+luka r = (x + 2) * 3 - 1 / 1 % 5 ^ 2;
+luka cmp = x == 10;
+luka neq = x != 5;
+luka leq = x <= 10;
+luka geq = x >= 0;
+
+# Operadores de reduccion
+combo lista = [1, 2, 3, 4, 5];
+luka total  = sume(lista);
+luka prod   = multiplique(lista);
+luka maximo = el_mas(lista);
+luka minimo = el_menos(lista);
+
+# Literales numericos flotantes y enteros
+vuelto f1 = 0.5;
+vuelto f2 = 99.99;
+luka   n1 = 0;
+luka   n2 = 999;
+
+# ERROR LEXICO: caracter invalido al final
+@

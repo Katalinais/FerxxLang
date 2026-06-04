@@ -97,6 +97,135 @@ error intencional marcado en el test.
 | `ferxxlang`         | ✅ Binario compilado y ejecutable              |
 | `tests/test_basic.fxx` | ✅ Corre; error sintáctico esperado (gramática vacía) |
 
-**Próxima fase:** implementar la gramática completa en `sintaxis.y` (FASE 1).
+**Próxima fase:** completar el léxico y crear test léxico (FASE 1).
+
+---
+
+## FASE 1 — Completar lexico.l y test léxico
+
+**Fecha:** 2026-06-04  
+**Commit:** *(ver historial)*
+
+### Objetivo
+Agregar los tokens lógicos faltantes (`AND`, `OR`, `NOT`) en sus dos formas
+(palabras clave y símbolos), soporte para strings con comillas simples,
+y crear un test léxico exhaustivo que cubra todos los tokens del lenguaje.
+
+---
+
+### Cambios en `src/lexico.l`
+
+#### 1. Tokens lógicos — palabras clave (antes de `{ID}`)
+```flex
+"y_es"    { return AND; }
+"o_bien"  { return OR; }
+"no_es"   { return NOT; }
+```
+Se ubican **antes** de la regla `{ID}` para que el lexer los reconozca como
+keywords y no como identificadores genéricos.
+
+#### 2. Tokens lógicos — símbolos (sección de operadores)
+```flex
+"&&"  { return AND; }
+"||"  { return OR; }
+"!"   { return NOT; }
+```
+`"!="` (NEQ) precede a `"!"` en el archivo. Flex aplica la regla del
+*maximal munch* — al leer `!=`, el patrón de dos caracteres siempre gana sobre
+el de uno, por lo que no hay ambigüedad.
+
+#### 3. Strings con comillas simples
+```flex
+\'[^\']*\'   { return LIT_STRING; }
+```
+Añadido junto a la regla de dobles comillas. Permite `'bacano'` además
+de `"bacano"`.
+
+#### 4. Comentarios de sección (corrección técnica)
+Los comentarios `/* */` en la sección de reglas de Flex 2.6.x deben ir
+**indentados con un tab** (o cualquier espacio). Si están en columna 0
+son tratados como patrones de regla y producen `unrecognized rule`.
+Se ajustó el formato de todos los comentarios de sección a tab-indentado.
+
+---
+
+### Cambios en `src/sintaxis.y`
+
+Agregada declaración de los tres tokens faltantes:
+```bison
+%token AND OR NOT
+```
+
+---
+
+### Contraste con `LF_Final.md`
+
+| Requisito de LF_Final.md                      | Estado |
+|------------------------------------------------|--------|
+| Tipos básicos (int, float, bool, string)       | ✅     |
+| Estructuras compuestas (vector, matrix)        | ✅     |
+| Aritmética (+, -, *, /, %)                     | ✅     |
+| Operadores de reducción (sum, prod, max, min)  | ✅     |
+| Control de flujo (if/else, while, for, switch) | ✅     |
+| Funciones, return, print, input                | ✅     |
+| Try/catch/throw/assert                         | ✅     |
+| Operadores lógicos (AND, OR, NOT)              | ✅ nuevo |
+| Literales string comillas dobles y simples     | ✅ nuevo |
+| Identificadores, números, comentarios          | ✅     |
+| Errores léxicos con número de línea            | ✅     |
+
+---
+
+### Compilación tras los cambios
+
+```
+bison -d -v src/sintaxis.y -o src/sintaxis.tab.c
+flex -o src/lexico.yy.c src/lexico.l
+gcc src/sintaxis.tab.c src/lexico.yy.c -o ferxxlang -lfl
+```
+
+Sin warnings ni errores.
+
+---
+
+### Resultado de `./ferxxlang tests/test_lexico.fxx`
+
+```
+Error sintactico en linea 4: syntax error
+```
+
+**Análisis del output:**
+
+- El error sintáctico en línea 4 (`luka x = 10;`) es **esperado**: la
+  gramática sigue siendo `programa : /* vacio */`, que solo acepta EOF.
+  El primer token léxico (INT) ya no es aceptado → syntax error.
+
+- El parser aborta inmediatamente después del primer error sintáctico
+  (no hay reglas de recuperación de error en esta fase), por lo que
+  **nunca llega a la línea 85** donde está el `@`.
+
+- La regla de error léxico **sí funciona** correctamente. Se verifica con:
+  ```
+  $ printf '@\n' | ./ferxxlang /dev/stdin
+  Error lexico en linea 1: '@'
+  Error sintactico en linea 1: syntax error
+  ```
+  El carácter `@` produce `Error lexico en linea 1: '@'` antes de que el
+  parser reporte el error sintáctico. La regla está bien implementada; su
+  aparición al final del test completo quedará visible cuando la gramática
+  tenga recuperación de errores (fases posteriores).
+
+---
+
+### Estado del proyecto al final de FASE 1
+
+| Archivo                  | Estado                                             |
+|--------------------------|----------------------------------------------------|
+| `src/lexico.l`           | ✅ Completo — todos los tokens del vocabulario     |
+| `src/sintaxis.y`         | ✅ AND/OR/NOT declarados; gramática aún vacía      |
+| `tests/test_lexico.fxx`  | ✅ Creado — cubre todos los tokens                 |
+| `tests/test_basic.fxx`   | ✅ Sin cambios                                     |
+
+**Próxima fase:** implementar la gramática completa en `sintaxis.y` (FASE 2).
 
 ---
