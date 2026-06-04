@@ -5,7 +5,17 @@
 ## FASE 0 — Entorno de compilación y Makefile
 
 **Fecha:** 2026-06-04  
-**Commit:** *(ver historial)*
+**Commit:** `9ce9182`
+
+### Commit message (English)
+```
+feat(phase-0): add Makefile and build environment setup
+
+- Add Makefile with all/test/clean targets for Flex+Bison+GCC pipeline
+- Drop -ly flag (liby not installed on Kali; main/yyerror already in sintaxis.y)
+- Update .gitignore to track AVANCES.md and exclude generated build artifacts
+- Add AVANCES.md with exhaustive Phase 0 documentation
+```
 
 ### Objetivo
 Verificar el toolchain (Flex, Bison, GCC), crear el Makefile con los targets
@@ -87,6 +97,29 @@ error intencional marcado en el test.
 
 ---
 
+### Cómo probar esta fase
+
+**Con Makefile (recomendado):**
+```bash
+make           # compila todo desde cero
+make test      # corre tests/*.fxx y reporta OK/FAIL por archivo
+make clean     # elimina todos los archivos generados
+```
+
+**Verificar versiones del toolchain:**
+```bash
+flex --version && bison --version && gcc --version
+```
+
+**Probar manualmente un archivo específico:**
+```bash
+./ferxxlang tests/test_basic.fxx
+# Salida esperada: "Error sintactico en linea 3: syntax error"
+# (gramática vacía — normal en esta fase)
+```
+
+---
+
 ### Estado del proyecto al final de FASE 0
 
 | Archivo             | Estado                                         |
@@ -104,7 +137,20 @@ error intencional marcado en el test.
 ## FASE 1 — Completar lexico.l y test léxico
 
 **Fecha:** 2026-06-04  
-**Commit:** *(ver historial)*
+**Commit:** `e2e9b29`
+
+### Commit message (English)
+```
+feat(phase-1): add AND/OR/NOT tokens, single-quote strings, and lexer test
+
+- lexico.l: add AND/OR/NOT as keyword variants (y_es/o_bien/no_es) and
+  symbol variants (&&/||/!) placed before {ID} rule to avoid misclassification
+- lexico.l: add single-quote string literal rule
+- lexico.l: fix section comments — indented with tab to avoid Flex 2.6.x
+  "unrecognized rule" error (col-0 block comments parsed as patterns)
+- sintaxis.y: declare AND OR NOT tokens
+- tests/test_lexico.fxx: comprehensive lexer test covering all token categories
+```
 
 ### Objetivo
 Agregar los tokens lógicos faltantes (`AND`, `OR`, `NOT`) en sus dos formas
@@ -214,6 +260,45 @@ Error sintactico en linea 4: syntax error
   parser reporte el error sintáctico. La regla está bien implementada; su
   aparición al final del test completo quedará visible cuando la gramática
   tenga recuperación de errores (fases posteriores).
+
+---
+
+### Cómo probar esta fase
+
+**Con Makefile (recomendado):**
+```bash
+make clean && make        # recompila desde cero
+make test                 # corre todos los .fxx en tests/ y reporta OK/FAIL
+```
+
+**Manualmente — test léxico completo:**
+```bash
+./ferxxlang tests/test_lexico.fxx
+# Salida esperada: "Error sintactico en linea 4: syntax error"
+# (sintaxis vacía — normal en esta fase)
+```
+
+**Manualmente — verificar error léxico aislado:**
+```bash
+printf '@\n' | ./ferxxlang /dev/stdin
+# Salida esperada:
+# Error lexico en linea 1: '@'
+# Error sintactico en linea 1: syntax error
+```
+
+**Manualmente — verificar string con comillas simples:**
+```bash
+printf "frase s = 'hola';\n" | ./ferxxlang /dev/stdin
+# Salida esperada: "Error sintactico en linea 1: syntax error"
+# (el token LIT_STRING se reconoce correctamente; el error es sólo sintáctico)
+```
+
+**Manualmente — verificar operadores lógicos:**
+```bash
+printf 'si_ve (x y_es y) { }\n' | ./ferxxlang /dev/stdin
+printf 'si_ve (x && y) { }\n'   | ./ferxxlang /dev/stdin
+# En ambos casos el token AND se reconoce; error es sintáctico (gramática vacía)
+```
 
 ---
 
