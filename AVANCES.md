@@ -314,3 +314,218 @@ printf 'si_ve (x && y) { }\n'   | ./ferxxlang /dev/stdin
 **Próxima fase:** implementar la gramática completa en `sintaxis.y` (FASE 2).
 
 ---
+
+## FASE 2 — Gramática Capa 1: declaraciones y expresiones
+
+**Fecha:** 2026-06-04  
+**Commit:** *(ver historial)*
+
+### Commit message (English)
+```
+feat(phase-2): implement grammar layer 1 — declarations and expressions
+
+- sintaxis.y: replace empty grammar with full Layer 1 rules:
+    programa, lista_sent, sentencia, declaracion, tipo,
+    asignacion, bloque, expr
+- All 10 types declared in tipo rule (luka/vuelto/firme/frase/combo/
+  parche/fila/llave/cuadro/parcero)
+- Full expression grammar with binary and unary operators;
+  precedence table resolves all operator conflicts (0 shift/reduce)
+- Array element assignment: ID[expr] = expr
+- Array element read: ID[expr] in expressions
+- hubo_error flag + printf moved to main(): fixes Bison default-reduce
+  race condition where success message fired before yyerror() on errors
+- main() now returns yyparse() || hubo_error for correct make test exit codes
+- tests/test_declaraciones.fxx: Layer 1 test covering all types,
+  initializations, array access, arithmetic and logical expressions,
+  nested blocks with variable shadowing, and intentional error (commented)
+```
+
+---
+
+### Objetivo
+Implementar la primera capa de gramática en `src/sintaxis.y`:
+declaraciones de variables (con y sin inicialización), asignaciones,
+acceso a arreglos y expresiones completas (aritméticas, relacionales,
+lógicas). Todo con precedencia de operadores correctamente declarada.
+
+---
+
+### Gramática implementada
+
+#### Reglas de producción
+
+```
+programa    → lista_sent
+lista_sent  → ε | lista_sent sentencia
+sentencia   → declaracion SEMI
+            | asignacion SEMI
+            | bloque
+            | SEMI
+declaracion → tipo ID | tipo ID ASSIGN expr
+tipo        → INT | FLOAT | BOOL | STRING | VECTOR | MATRIZ
+            | LIST | MAP | GRID | CLASS
+asignacion  → ID ASSIGN expr
+            | ID LBRACKET expr RBRACKET ASSIGN expr
+bloque      → LBRACE lista_sent RBRACE
+expr        → expr OP expr            (binarios: +-*/%^ == != < > <= >= && ||)
+            | NOT expr
+            | MINUS expr  %prec UMINUS
+            | LPAREN expr RPAREN
+            | ID LBRACKET expr RBRACKET
+            | ID | LIT_INT | LIT_FLOAT | LIT_STRING | LIT_BOOL
+```
+
+#### Tabla de precedencia (menor → mayor)
+
+| Nivel | Declaración       | Operadores                  |
+|-------|-------------------|-----------------------------|
+| 1     | `%nonassoc`       | SIN_ELSE, ELSE (reservados) |
+| 2     | `%right`          | ASSIGN                      |
+| 3     | `%left`           | OR (`o_bien`, `\|\|`)       |
+| 4     | `%left`           | AND (`y_es`, `&&`)          |
+| 5     | `%right`          | NOT (`no_es`, `!`)          |
+| 6     | `%left`           | EQ, NEQ                     |
+| 7     | `%left`           | LT, GT, LEQ, GEQ            |
+| 8     | `%left`           | PLUS, MINUS                 |
+| 9     | `%left`           | TIMES, DIV, MOD             |
+| 10    | `%right`          | POW                         |
+| 11    | `%right`          | UMINUS (negación unaria)    |
+
+---
+
+### Conflictos shift/reduce: 0
+
+`bison -v src/sintaxis.y` no reporta ninguna línea de conflicto.
+Todos los conflictos potenciales de operadores binarios se resuelven
+mediante las declaraciones de precedencia `%left`/`%right`. El conflicto
+teórico entre `expr → ID .` y `expr → ID . LBRACKET expr RBRACKET` **no
+ocurre** porque `LBRACKET` no pertenece a FOLLOW(expr) en esta gramática
+(solo aparece _antes_ de un expr, nunca después).
+
+El token `SIN_ELSE` está declarado en `%nonassoc` para la futura
+resolución del dangling-else (Fase 3), sin efecto en esta fase.
+
+---
+
+### Corrección técnica: printf en main() en vez de acción gramatical
+
+**Problema:** En Bison/LALR, cuando el estado 2 recibe un token inesperado
+(p. ej. `IF`) y NO hay acción explícita para ese token, el parser ejecuta
+la acción por defecto (`$default reduce`) que es reducir
+`programa → lista_sent` — **antes** de llamar a `yyerror()`. Esto hacía que
+`✓ Analisis sintactico exitoso` se imprimiera incluso cuando el parse
+terminaba en error.
+
+**Solución:** Se movió el `printf` a `main()` donde se puede comprobar
+`!yyparse() && !hubo_error` con certeza, ya que `yyparse()` ya habrá
+terminado completamente.
+
+```c
+/* En main() — después de yyparse() */
+if (!resultado && !hubo_error)
+    printf("✓ Analisis sintactico exitoso\n");
+return resultado || hubo_error;
+```
+
+También se añadió `static int hubo_error` que se activa en `yyerror()`,
+garantizando que el código de salida sea 1 ante cualquier error sintáctico
+(incluso si Bison recuperó el parse).
+
+---
+
+### Compilación
+
+```
+bison -d -v src/sintaxis.y -o src/sintaxis.tab.c
+flex -o src/lexico.yy.c src/lexico.l
+gcc src/sintaxis.tab.c src/lexico.yy.c -o ferxxlang -lfl
+```
+
+Sin warnings ni errores.
+
+---
+
+### Resultado de `./ferxxlang tests/test_declaraciones.fxx`
+
+```
+✓ Analisis sintactico exitoso
+```
+
+**Verificación de error intencional** (si se descomenta `luka = 5;`):
+```
+Error sintactico en linea N: syntax error
+```
+
+---
+
+### Resultado de `make test`
+
+```
+Error sintactico en linea 8: syntax error
+FAIL: tests/test_basic.fxx
+✓ Analisis sintactico exitoso
+OK: tests/test_declaraciones.fxx
+Error sintactico en linea 21: syntax error
+FAIL: tests/test_lexico.fxx
+```
+
+**test_basic.fxx y test_lexico.fxx fallan** porque usan constructs de
+control de flujo (`si_ve`, `siga_pues`, `haga`, etc.) que pertenecen a
+las capas 2 y 3 de la gramática (Fases 3 y 4). Estos tests pasarán OK
+cuando esas fases estén implementadas.
+
+**Nota:** `combo` es una keyword (token VECTOR), no un identificador. Por
+eso el test usa `combo nums;` + `nums[0] = 5;` en lugar de `combo[0] = 5;`.
+
+---
+
+### Cómo probar esta fase
+
+**Con Makefile:**
+```bash
+make clean && make
+make test
+```
+
+**Manualmente — test declaraciones:**
+```bash
+./ferxxlang tests/test_declaraciones.fxx
+# Salida esperada: ✓ Analisis sintactico exitoso
+```
+
+**Manualmente — verificar expresion logica:**
+```bash
+printf 'firme c = x > 0 y_es no_es activo;\n' | ./ferxxlang /dev/stdin
+# Salida esperada: ✓ Analisis sintactico exitoso
+```
+
+**Manualmente — verificar asignacion a arreglo:**
+```bash
+printf 'combo nums;\nnums[0] = 5;\n' | ./ferxxlang /dev/stdin
+# Salida esperada: ✓ Analisis sintactico exitoso
+```
+
+**Manualmente — verificar error intencional:**
+```bash
+printf 'luka = 5;\n' | ./ferxxlang /dev/stdin
+# Salida esperada:
+# Error sintactico en linea 1: syntax error
+# (exit code 1)
+```
+
+---
+
+### Estado del proyecto al final de FASE 2
+
+| Archivo                      | Estado                                              |
+|------------------------------|-----------------------------------------------------|
+| `src/sintaxis.y`             | ✅ Capa 1 completa — declaraciones y expresiones    |
+| `src/lexico.l`               | ✅ Sin cambios                                      |
+| `tests/test_declaraciones.fxx` | ✅ Pasa — exit 0                                  |
+| `tests/test_basic.fxx`       | ⏳ FAIL esperado (usa si_ve — Fase 3)               |
+| `tests/test_lexico.fxx`      | ⏳ FAIL esperado (usa si_ve y haga — Fases 3/4)     |
+
+**Próxima fase:** control de flujo (if/else, while, for, switch) en `sintaxis.y`.
+
+---

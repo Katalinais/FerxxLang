@@ -1,0 +1,61 @@
+# Test Capa 1 — declaraciones, asignaciones y expresiones
+
+# ── Declaraciones sin inicializar (todos los tipos) ──────
+luka   a;
+vuelto b;
+firme  c;
+frase  d;
+combo  e;
+parche f;
+fila   g;
+llave  h;
+cuadro i;
+parcero j;
+
+# ── Declaraciones con inicializacion ─────────────────────
+luka   x       = 10;
+vuelto pi      = 3.14;
+firme  activo  = firme_si;
+frase  saludo  = "parcero";
+
+# ── Asignacion simple ─────────────────────────────────────
+x = 99;
+
+# ── Asignacion a elemento de arreglo (ID[expr] = expr) ───
+# combo es keyword de tipo; se usa una variable llamada nums
+combo nums;
+nums[0] = 5;
+nums[x] = pi;
+
+# ── Expresiones aritmeticas anidadas ─────────────────────
+luka y = (x + 2) * 3 - 1 % 2;
+
+# ── Expresion con potencia y negacion unaria ──────────────
+vuelto z = -pi ^ 2;
+
+# ── Expresion logica: AND + NOT ──────────────────────────
+firme cond = x > 0 y_es no_es activo;
+
+# ── Expresion logica: OR con simbolos ────────────────────
+firme otro = activo || firme_no;
+
+# ── Acceso a arreglo en expresion ────────────────────────
+luka val = nums[0] + 1;
+
+# ── Bloque vacio ─────────────────────────────────────────
+{}
+
+# ── Bloque con declaraciones locales (variable shadowing) ─
+{
+    luka x = 999;
+    vuelto pi = 0.0;
+    firme local = firme_no;
+    x = x + 1;
+}
+
+# ── Sentencia vacia ───────────────────────────────────────
+;
+
+# ERROR SINTACTICO: luka = 5;
+# La linea de arriba esta comentada. Si se descomenta falla porque
+# falta el nombre de la variable entre el tipo y el operador =.
