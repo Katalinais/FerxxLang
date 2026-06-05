@@ -1,0 +1,99 @@
+# Test Capa 2 — control de flujo: if/else, while, for, switch
+
+luka x = 10;
+luka y = 0;
+firme activo = firme_si;
+firme bandera = nel;
+
+# ── if simple sin else ────────────────────────────────────
+si_ve (x > 0) {
+    y = x;
+}
+
+# ── if-else completo ─────────────────────────────────────
+si_ve (x > 5) {
+    y = x * 2;
+} o_si_no {
+    y = 0;
+}
+
+# ── if-else if-else anidado (3 niveles) ──────────────────
+si_ve (x > 100) {
+    y = 100;
+} o_si_no si_ve (x > 50) {
+    y = 50;
+} o_si_no si_ve (x > 0) {
+    y = x;
+} o_si_no {
+    y = -1;
+}
+
+# ── dangling-else: el o_si_no va con el si_ve mas cercano ─
+si_ve (x > 0) {
+    si_ve (x > 5) {
+        y = 1;
+    } o_si_no {
+        y = 2;
+    }
+}
+
+# ── while con condicion compuesta (y_es, o_bien) ─────────
+siga_pues (x > 0 y_es activo) {
+    x = x - 1;
+}
+
+siga_pues (x == 0 o_bien bandera) {
+    bandera = firme_no;
+    x = x + 1;
+}
+
+siga_pues (no_es activo) {
+    activo = firme_si;
+}
+
+# ── for con declaracion en init ───────────────────────────
+dele (luka i = 0; i < 10; i = i + 1) {
+    y = y + i;
+}
+
+# ── for con asignacion en init ────────────────────────────
+dele (x = 0; x < 5; x = x + 1) {
+    y = y + x;
+}
+
+# ── for con update vacio ──────────────────────────────────
+dele (luka j = 0; j < 3;) {
+    j = j + 1;
+}
+
+# ── switch con 3 casos ────────────────────────────────────
+segun (x) {
+    toca 0: y = 0;
+    toca 1: y = 1;
+    toca 2:
+        luka doble = x * 2;
+        y = doble;
+}
+
+# ── switch vacio ──────────────────────────────────────────
+segun (y) {
+}
+
+# ── estructuras anidadas: while > if > for ────────────────
+luka cuenta = 3;
+siga_pues (cuenta > 0) {
+    si_ve (cuenta > 1) {
+        dele (luka k = 0; k < cuenta; k = k + 1) {
+            y = y + k;
+        }
+    } o_si_no {
+        y = 0;
+    }
+    cuenta = cuenta - 1;
+}
+
+# ── ERROR SINTACTICO: si_ve sin parentesis ────────────────
+# La linea siguiente esta comentada porque genera error:
+# si_ve x > 0 { }
+# Error esperado: "Error sintactico en linea N: syntax error"
+# porque si_ve requiere (expr) — los parentesis son obligatorios.
