@@ -108,6 +108,7 @@ LIT_FLOAT   {DIGITO}+\.{DIGITO}+
 ";"                     { return SEMI; }
 ","                     { return COMMA; }
 ":"                     { return COLON; }
+"."                     { return DOT; }
 
 	/* -- ESPACIOS --------------------------------------- */
 [ \t\n]+                { }

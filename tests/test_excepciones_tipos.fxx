@@ -1,0 +1,107 @@
+# Test Capa 4 — excepciones, literales de coleccion, reductores, acceso a campos
+
+luka x = 10;
+vuelto pi = 3.14;
+firme activo = firme_si;
+
+# ── ensaye / ojo_pues basico (catch sin tipo) ─────────────
+ensaye {
+    luka y = 0;
+} ojo_pues (e) {
+    diga("error capturado");
+}
+
+# ── ensaye con codigo real y paila en catch ───────────────
+ensaye {
+    cuadre(x > 0, "x debe ser positivo");
+    luka resultado = x * 2;
+    diga(resultado);
+} ojo_pues (e) {
+    paila e;
+}
+
+# ── ensaye con tipo en el catch ───────────────────────────
+ensaye {
+    x = x - 20;
+} ojo_pues (frase mensaje) {
+    diga(mensaje);
+}
+
+# ── cuadre sin mensaje ────────────────────────────────────
+cuadre(pi > 0);
+
+# ── cuadre con mensaje ────────────────────────────────────
+cuadre(x > 0, "x debe ser positivo");
+cuadre(activo, "activo debe ser verdadero");
+
+# ── paila con expresion ───────────────────────────────────
+haga verificar(luka n) {
+    si_ve (n < 0) {
+        paila n;
+    }
+    vuelva n;
+}
+
+# ── paila sola (re-lanza) ─────────────────────────────────
+haga relanzar() {
+    ensaye {
+        luka z = 0;
+    } ojo_pues (e) {
+        paila;
+    }
+}
+
+# ── inicializacion de combo (vector literal) ──────────────
+combo nums = [1, 2, 3, 4, 5];
+combo vacio = [];
+combo expresiones = [x * 2, pi + 1.0, 99];
+
+# ── inicializacion de fila (lista) ───────────────────────
+fila nombres = ["parcero", "bacano", "chimba"];
+
+# ── operadores de reduccion sobre variable ────────────────
+luka total      = sume(nums);
+luka producto   = multiplique(nums);
+luka maximo     = el_mas(nums);
+luka minimo     = el_menos(nums);
+
+# ── reductores sobre literal de coleccion ─────────────────
+luka max_inline = el_mas([3, 1, 4, 1, 5]);
+luka sum_inline = sume([10, 20, 30]);
+
+# ── acceso a campo con DOT ────────────────────────────────
+parche tabla;
+luka filas   = tabla.filas;
+luka columnas = tabla.columnas;
+
+combo nums2;
+luka tam = nums2.size;
+
+# ── llamada de metodo con DOT ─────────────────────────────
+combo lista2;
+luka primero = lista2.get(0);
+luka ultimo  = lista2.get(lista2.size);
+
+# ── combinacion: reductor sobre literal + operacion ───────
+luka promedio = sume([10, 20, 30]) / 3;
+firme grande  = el_mas([3, 7, 2]) > 5;
+
+# ── anidamiento: ensaye dentro de funcion ─────────────────
+haga division_segura(luka a, luka b) {
+    ensaye {
+        cuadre(b != 0, "divisor no puede ser cero");
+        vuelva a / b;
+    } ojo_pues (frase err) {
+        diga(err);
+        vuelva 0;
+    }
+}
+
+# ── reduccion dentro de expresion logica ─────────────────
+firme hay_positivos = sume([1, 2, 3]) > 0 y_es el_mas([1, 2, 3]) < 100;
+
+# ── ERROR INTENCIONAL: ensaye sin ojo_pues ────────────────
+# La siguiente linea esta comentada porque genera error:
+# ensaye { luka z = 0; }
+# Error esperado: "Error sintactico en linea N: syntax error"
+# porque todo bloque ensaye DEBE tener un bloque ojo_pues.
