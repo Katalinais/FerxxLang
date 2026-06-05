@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="icon-dark.png" alt="FerxxLang logo" width="180">
+</p>
+
 # FerxxLang
 
 **FerxxLang** es un lenguaje de scripting con vocabulario en argot colombiano diseñado para la construcción modular de scripts científicos. Sus archivos tienen extensión `.fxx`. El analizador léxico y sintáctico está implementado con **Flex** y **Bison** sobre C.
