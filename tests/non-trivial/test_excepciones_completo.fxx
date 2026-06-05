@@ -1,5 +1,5 @@
 # test_excepciones_completo — cobertura exhaustiva del manejo de excepciones
-# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
+# ESPERADO: ✓ Compilacion exitosa  (exit 0)
 #
 # Verifica: try/catch (con y sin tipo), throw simple y con expr,
 # assert con y sin mensaje, anidamiento de try, try en recursion,

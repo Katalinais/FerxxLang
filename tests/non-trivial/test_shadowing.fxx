@@ -1,5 +1,5 @@
 # test_shadowing — variable shadowing en bloques anidados
-# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
+# ESPERADO: ✓ Compilacion exitosa  (exit 0)
 #
 # Verifica que el parser acepta la re-declaracion del mismo identificador
 # en bloques internos, con o sin cambio de tipo.

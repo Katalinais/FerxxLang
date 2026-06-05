@@ -1,0 +1,178 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "FerxxLang",
+  "scopeName": "source.ferxxlang",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#booleans" },
+    { "include": "#types" },
+    { "include": "#control" },
+    { "include": "#functions" },
+    { "include": "#exceptions" },
+    { "include": "#reducers" },
+    { "include": "#operators" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.ferxxlang",
+          "match": "#.*$"
+        },
+        {
+          "name": "comment.line.double-slash.ferxxlang",
+          "match": "//.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.ferxxlang",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.ferxxlang",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.ferxxlang",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.ferxxlang",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.float.ferxxlang",
+          "match": "\\b[0-9]+\\.[0-9]+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.ferxxlang",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    },
+    "booleans": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.ferxxlang",
+          "match": "\\b(firme_si|firme_no|de_una|nel)\\b"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "storage.type.ferxxlang",
+          "match": "\\b(luka|vuelto|firme|frase|combo|parche|parcero|fila|cuadro|llave)\\b"
+        }
+      ]
+    },
+    "control": {
+      "patterns": [
+        {
+          "name": "keyword.control.conditional.ferxxlang",
+          "match": "\\b(si_ve|o_si_no|segun|toca)\\b"
+        },
+        {
+          "name": "keyword.control.loop.ferxxlang",
+          "match": "\\b(siga_pues|dele)\\b"
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "storage.type.function.ferxxlang",
+          "match": "\\bhaga\\b"
+        },
+        {
+          "name": "keyword.control.return.ferxxlang",
+          "match": "\\bvuelva\\b"
+        },
+        {
+          "name": "support.function.io.ferxxlang",
+          "match": "\\b(diga|responda)\\b"
+        },
+        {
+          "name": "entity.name.function.ferxxlang",
+          "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\s*(?=\\()"
+        }
+      ]
+    },
+    "exceptions": {
+      "patterns": [
+        {
+          "name": "keyword.control.exception.ferxxlang",
+          "match": "\\b(ensaye|ojo_pues|paila|cuadre)\\b"
+        }
+      ]
+    },
+    "reducers": {
+      "patterns": [
+        {
+          "name": "support.function.reducer.ferxxlang",
+          "match": "\\b(sume|multiplique|el_mas|el_menos)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.logical.ferxxlang",
+          "match": "(&&|\\|\\||!|\\by_es\\b|\\bo_bien\\b|\\bno_es\\b)"
+        },
+        {
+          "name": "keyword.operator.comparison.ferxxlang",
+          "match": "(==|!=|<=|>=|<|>)"
+        },
+        {
+          "name": "keyword.operator.arithmetic.ferxxlang",
+          "match": "(\\+|-|\\*|/|%|\\^)"
+        },
+        {
+          "name": "keyword.operator.assignment.ferxxlang",
+          "match": "="
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.terminator.statement.ferxxlang",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.separator.ferxxlang",
+          "match": "[,:.]"
+        },
+        {
+          "name": "punctuation.section.braces.ferxxlang",
+          "match": "[{}]"
+        },
+        {
+          "name": "punctuation.section.brackets.ferxxlang",
+          "match": "[\\[\\]]"
+        },
+        {
+          "name": "punctuation.section.parens.ferxxlang",
+          "match": "[()]"
+        }
+      ]
+    }
+  }
+}

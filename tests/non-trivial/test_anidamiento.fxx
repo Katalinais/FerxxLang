@@ -1,6 +1,5 @@
 # test_anidamiento — estructuras profundamente anidadas sin limite de profundidad
-# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
-#
+# ESPERADO: ✓ Compilacion exitosa  (exit 0)
 # Verifica que la gramatica LALR(1) acepta anidamiento arbitrario de
 # if/else, while, for, switch, ensaye y expresiones parenteticas profundas.
 # LF_Final.md: "cada estructura pueda anidarse sin ambiguedad"

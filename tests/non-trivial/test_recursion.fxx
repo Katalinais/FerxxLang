@@ -1,5 +1,5 @@
 # test_recursion — invocaciones recursivas directas, mutuas y combinadas
-# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
+# ESPERADO: ✓ Compilacion exitosa  (exit 0)
 #
 # Verifica que la gramatica libre de contexto acepta recursion directa,
 # mutual y anidada en expresiones complejas.

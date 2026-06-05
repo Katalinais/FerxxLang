@@ -1,0 +1,35 @@
+{
+  "name": "ferxxlang-syntax",
+  "displayName": "FerxxLang Syntax",
+  "description": "Syntax highlighting and language configuration for FerxxLang .fxx files.",
+  "version": "0.1.0",
+  "publisher": "ferxxlang",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "ferxxlang",
+        "aliases": [
+          "FerxxLang",
+          "ferxxlang"
+        ],
+        "extensions": [
+          ".fxx"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ferxxlang",
+        "scopeName": "source.ferxxlang",
+        "path": "./syntaxes/ferxxlang.tmLanguage.json"
+      }
+    ]
+  }
+}

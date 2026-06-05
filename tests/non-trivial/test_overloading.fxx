@@ -1,5 +1,5 @@
 # test_overloading — sobrecarga sintactica de funciones
-# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
+# ESPERADO: ✓ Compilacion exitosa  (exit 0)
 #
 # Verifica que el parser acepta multiples definiciones haga con el mismo
 # nombre diferenciadas por tipo del primer parametro o numero de parametros.

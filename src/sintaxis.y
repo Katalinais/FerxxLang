@@ -844,7 +844,7 @@ int main(int argc, char **argv) {
     if (yyin != stdin) fclose(yyin);
 
     if (!resultado && !hubo_error)
-        printf("✓ Analisis sintactico exitoso\n");
+        printf("✓ Compilacion exitosa\n");
 
     return resultado || hubo_error;
 }

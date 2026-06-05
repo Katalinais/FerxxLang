@@ -50,7 +50,7 @@ make test                    # corre todos los tests
 make clean                   # elimina archivos generados
 ```
 
-El ejecutable imprime `✓ Analisis sintactico exitoso` en stdout si el archivo es válido, o mensajes de error en stderr con el número de línea exacto.
+El ejecutable imprime `✓ Compilacion exitosa` en stdout si el archivo es válido, o mensajes de error en stderr con el número de línea exacto.
 
 ---
 
@@ -507,7 +507,7 @@ Los archivos de prueba en `tests/non-trivial/` cubren las exigencias de LF_Final
 - Shadowing de variable de control en `while` y `for`
 - Shadowing de parámetro formal dentro de la función
 
-**Qué espera el analizador:** `✓ Analisis sintactico exitoso` — el parser no lleva tabla de símbolos, por lo que re-declarar un identificador es siempre sintácticamente válido.
+**Qué espera el analizador:** `✓ Compilacion exitosa` — el parser no lleva tabla de símbolos, por lo que re-declarar un identificador es siempre sintácticamente válido.
 
 ```fxx
 # Ejemplo clave: cambio de tipo en cascada
@@ -538,7 +538,7 @@ Los archivos de prueba en `tests/non-trivial/` cubren las exigencias de LF_Final
 - Llamadas recursivas en expresiones complejas: `factorial(5) + fibonacci(6) * potencia(2, 3)`
 - Recursión dentro de `for`
 
-**Qué espera el analizador:** `✓ Analisis sintactico exitoso` — la gramática es libre de contexto, por lo que `llamada_funcion → ID (...)` acepta cualquier `ID` como nombre de función, incluyendo el de la función actual.
+**Qué espera el analizador:** `✓ Compilacion exitosa` — la gramática es libre de contexto, por lo que `llamada_funcion → ID (...)` acepta cualquier `ID` como nombre de función, incluyendo el de la función actual.
 
 ```fxx
 # Ejemplo clave: recursión mutua (forward reference)
@@ -570,7 +570,7 @@ haga es_impar(luka n) {
 - Reductores con expresiones anidadas como argumento: `sume([x*2, y+1, (x+y)*3])`
 - Llamada de función como argumento de otra función: `proceso_completo(sume([1,2,3]), es_par(4))`
 
-**Qué espera el analizador:** `✓ Analisis sintactico exitoso` — la gramática no limita la profundidad de anidamiento. Cada `bloque` puede contener cualquier `sentencia`, incluyendo otras sentencias que abran bloques.
+**Qué espera el analizador:** `✓ Compilacion exitosa` — la gramática no limita la profundidad de anidamiento. Cada `bloque` puede contener cualquier `sentencia`, incluyendo otras sentencias que abran bloques.
 
 ```fxx
 # Ejemplo clave: 5 niveles de anidamiento
@@ -605,7 +605,7 @@ haga proceso_completo(luka n, firme verificar) {
 - Sobrecarga de función anidada (dentro de otra función)
 - Llamadas con argumentos nombrados en función sobrecargada
 
-**Qué espera el analizador:** `✓ Analisis sintactico exitoso` — la sobrecarga es **exclusivamente sintáctica**: el parser acepta cualquier número de `def_funcion` con el mismo `ID` porque no hay tabla de símbolos que detecte duplicados.
+**Qué espera el analizador:** `✓ Compilacion exitosa` — la sobrecarga es **exclusivamente sintáctica**: el parser acepta cualquier número de `def_funcion` con el mismo `ID` porque no hay tabla de símbolos que detecte duplicados.
 
 ```fxx
 # Ejemplo clave: mismo nombre, 5 tipos diferentes del primer parámetro
@@ -636,7 +636,7 @@ haga procesar(combo v)  { vuelva sume(v); }
 - Combinación: `cuadre` + `paila` + `ensaye` dentro de `if`
 - `try` con operadores de reducción (`sume`, `el_mas`) sobre literales de colección
 
-**Qué espera el analizador:** `✓ Analisis sintactico exitoso`
+**Qué espera el analizador:** `✓ Compilacion exitosa`
 
 ```fxx
 # Ejemplo clave: try/catch anidados con re-throw

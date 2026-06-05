@@ -10,3 +10,5 @@ src/sintaxis.tab.h
 src/lexico.yy.c
 src/sintaxis.output
 ferxxlang
+/.vscode
+.Makefile.swp
