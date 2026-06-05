@@ -2,13 +2,20 @@
  * FerxxLang — Analizador sintactico (Bison)
  * Capa 1: declaraciones, asignaciones y expresiones
  * Capa 2: control de flujo (if/else, while, for, switch)
+ * Capa 3: funciones (definicion, llamada, return, print, input)
  *
- * Conflictos conocidos: 0 shift/reduce sin resolver.
+ * Conflictos conocidos: 1 shift/reduce — RESUELTO por shift (correcto).
+ *   Causa: `arg -> ID . COLON expr` vs `expr -> ID .` cuando lookahead
+ *   es COLON. COLON esta en FOLLOW(expr) porque `caso -> CASE expr COLON`.
+ *   El shift gana: dentro de lista_args, ID COLON expr se trata como
+ *   argumento nombrado (ej. calcular(base: 10)), que es el comportamiento
+ *   deseado.
+ *
+ * Otros conflictos:
  *   - Dangling-else: resuelto por %nonassoc SIN_ELSE / %nonassoc ELSE.
- *     El ELSE siempre se asocia al IF mas cercano (shift gana).
- *   - Operadores binarios: resueltos por las declaraciones %left/%right.
- *   - expr -> ID . vs expr -> ID . LBRACKET expr RBRACKET: no existe
- *     porque LBRACKET no esta en FOLLOW(expr) con esta gramatica.
+ *   - Operadores binarios: resueltos por %left / %right.
+ *   - expr->ID vs expr->llamada_funcion: no hay conflicto porque LPAREN
+ *     no esta en FOLLOW(expr) con esta gramatica.
  */
 
 %{
@@ -44,11 +51,7 @@ void yyerror(const char *s) {
 
 /*
  * Precedencia — de MENOR a MAYOR prioridad.
- *
- * SIN_ELSE / ELSE resuelven el dangling-else:
- *   si_ve (cond) bloque  o_si_no  bloque
- *   La regla sin ELSE usa %prec SIN_ELSE (menor prioridad);
- *   al ver ELSE en la entrada, el shift gana y lo asocia al IF mas cercano.
+ * SIN_ELSE/ELSE resuelven dangling-else.
  */
 %nonassoc SIN_ELSE
 %nonassoc ELSE
@@ -74,7 +77,6 @@ programa
 
 /*
  * lista_sent — secuencia de sentencias (puede estar vacia).
- * Recursion izquierda para evitar stack overflow en archivos grandes.
  */
 lista_sent
     : /* vacio */
@@ -83,17 +85,20 @@ lista_sent
 
 /*
  * sentencia — unidad basica de ejecucion.
- * Incluye declaraciones, asignaciones, bloques, control de flujo
- * y el punto-y-coma vacio (sentencia nula).
  */
 sentencia
-    : declaracion    SEMI
-    | asignacion     SEMI
+    : declaracion        SEMI
+    | asignacion         SEMI
     | bloque
     | sentencia_if
     | sentencia_while
     | sentencia_for
     | sentencia_switch
+    | def_funcion
+    | sentencia_return   SEMI
+    | sentencia_print    SEMI
+    | sentencia_input    SEMI
+    | llamada_funcion    SEMI
     | SEMI
     ;
 
@@ -106,7 +111,7 @@ declaracion
     ;
 
 /*
- * tipo — todos los tipos primitivos y compuestos de FerxxLang.
+ * tipo — todos los tipos primitivos y compuestos.
  */
 tipo
     : INT       /* luka    */
@@ -131,8 +136,7 @@ asignacion
 
 /*
  * bloque — { lista_sent }
- * Permite bloques vacios y variable shadowing (re-declarar un ID
- * dentro de un bloque anidado oculta el identificador externo).
+ * Variable shadowing: permite re-declarar el mismo ID dentro del bloque.
  */
 bloque
     : LBRACE lista_sent RBRACE
@@ -144,15 +148,7 @@ bloque
 
 /*
  * sentencia_if — si_ve / o_si_no
- *
- * Tres formas:
- *   1. si_ve (cond) bloque                       (sin else)
- *   2. si_ve (cond) bloque o_si_no bloque        (con else)
- *   3. si_ve (cond) bloque o_si_no sentencia_if  (else-if encadenado)
- *
- * El %prec SIN_ELSE en la primera alternativa resuelve el dangling-else:
- * el token ELSE tiene mayor precedencia que SIN_ELSE, por lo que el
- * parser siempre hace shift del ELSE y lo asocia al IF mas cercano.
+ * %prec SIN_ELSE en la primera alternativa resuelve el dangling-else.
  */
 sentencia_if
     : IF LPAREN expr RPAREN bloque                        %prec SIN_ELSE
@@ -169,9 +165,7 @@ sentencia_while
 
 /*
  * sentencia_for — dele (init; cond; update) bloque
- *
- * Dos variantes: con actualizacion (ID = expr) o sin ella.
- * for_init acepta declaracion o asignacion como inicializador.
+ * Segunda alternativa: for sin actualizacion (update vacio).
  */
 sentencia_for
     : FOR LPAREN for_init SEMI expr SEMI asignacion RPAREN bloque
@@ -188,10 +182,6 @@ for_init
 
 /*
  * sentencia_switch — segun (expr) { casos }
- *
- * Permite switch vacio y multiples casos.
- * Cada caso puede tener cero o mas sentencias (lista_sent es nullable).
- * No se usa DEFAULT porque el vocabulario de FerxxLang no lo incluye.
  */
 sentencia_switch
     : SWITCH LPAREN expr RPAREN LBRACE lista_casos RBRACE
@@ -199,23 +189,104 @@ sentencia_switch
     ;
 
 /*
- * lista_casos — uno o mas casos dentro del switch.
+ * lista_casos y caso — cuerpo del switch
+ * caso usa lista_sent (nullable) para evitar conflicto reduce/reduce.
  */
 lista_casos
     : caso
     | lista_casos caso
     ;
 
-/*
- * caso — toca expr: lista_sent
- *
- * Se usa lista_sent (nullable) en lugar de dos alternativas separadas
- * (con y sin cuerpo) para evitar un conflicto reduce/reduce: si
- * hubiera `caso : CASE expr COLON` como alternativa adicional, ambas
- * podrían reducirse ante lookahead CASE o RBRACE.
- */
 caso
     : CASE expr COLON lista_sent
+    ;
+
+/* ================================================================
+ * FUNCIONES — Capa 3
+ * ================================================================ */
+
+/*
+ * def_funcion — haga nombre(params) bloque
+ *
+ * Permite:
+ *   - Cero parametros: haga f() { }
+ *   - Uno o mas parametros tipados: haga f(luka n, frase s) { }
+ *   - Sobrecarga sintactica: dos funciones con el mismo nombre
+ *     difiriendo en tipo del primer parametro (el parser las acepta;
+ *     no se valida semanticamente).
+ *   - Funciones anidadas: def_funcion es una sentencia, valida dentro
+ *     de cualquier bloque, incluido el bloque de otra funcion.
+ */
+def_funcion
+    : FUNC ID LPAREN lista_params RPAREN bloque
+    | FUNC ID LPAREN              RPAREN bloque
+    ;
+
+/*
+ * lista_params — lista de parametros formales separados por coma
+ */
+lista_params
+    : param
+    | lista_params COMMA param
+    ;
+
+/*
+ * param — tipo ID  (parametro posicional tipado)
+ */
+param
+    : tipo ID
+    ;
+
+/*
+ * sentencia_return — vuelva expr  o  vuelva  (sin valor)
+ */
+sentencia_return
+    : RETURN expr
+    | RETURN
+    ;
+
+/*
+ * sentencia_print — diga(expr)  o  diga()
+ */
+sentencia_print
+    : PRINT LPAREN expr RPAREN
+    | PRINT LPAREN      RPAREN
+    ;
+
+/*
+ * sentencia_input — responda(prompt)  o  responda()
+ */
+sentencia_input
+    : INPUT LPAREN LIT_STRING RPAREN
+    | INPUT LPAREN            RPAREN
+    ;
+
+/*
+ * llamada_funcion — nombre(args)  o  nombre()
+ * Aparece tanto como sentencia como dentro de expresiones.
+ */
+llamada_funcion
+    : ID LPAREN lista_args RPAREN
+    | ID LPAREN            RPAREN
+    ;
+
+/*
+ * lista_args — argumentos reales separados por coma
+ */
+lista_args
+    : arg
+    | lista_args COMMA arg
+    ;
+
+/*
+ * arg — argumento posicional o nombrado
+ *
+ * arg -> ID COLON expr genera 1 shift/reduce (ver cabecera del archivo).
+ * Bison resuelve por shift: correcto para args nombrados (base: 10).
+ */
+arg
+    : expr
+    | ID COLON expr
     ;
 
 /* ================================================================
@@ -224,17 +295,9 @@ caso
 
 /*
  * expr — expresiones con precedencia completa.
- *
- * Binarios (resueltos por %left/%right):
- *   Aritmeticos : + - * / % ^
- *   Relacionales: == != < > <= >=
- *   Logicos     : y_es/&&  o_bien/||
- *
- * Unarios:
- *   no_es/!  con %right NOT
- *   negacion con %prec UMINUS
- *
- * Primarios: ID, ID[expr], (expr), literales
+ * llamada_funcion se lista ANTES que ID para que el parser pruebe
+ * la alternativa mas larga (ID LPAREN ...) antes que la simple (ID).
+ * No genera conflicto porque LPAREN no pertenece a FOLLOW(expr).
  */
 expr
     : expr PLUS  expr               { }
@@ -255,6 +318,7 @@ expr
     | MINUS expr  %prec UMINUS      { }
     | LPAREN expr RPAREN            { }
     | ID LBRACKET expr RBRACKET     { }
+    | llamada_funcion               { }
     | ID                            { }
     | LIT_INT                       { }
     | LIT_FLOAT                     { }

@@ -1,0 +1,102 @@
+# Test Capa 3 — funciones: definicion, llamada, return, print, input
+
+# ── Funcion sin parametros ────────────────────────────────
+haga saludar() {
+    vuelva 0;
+}
+
+# ── Funciones con un parametro de cada tipo basico ───────
+haga duplicar(luka n) {
+    vuelva n * 2;
+}
+
+haga escalar(vuelto f) {
+    vuelva f * 2.0;
+}
+
+haga negar(firme b) {
+    vuelva no_es b;
+}
+
+haga longitud(frase s) {
+    vuelva 0;
+}
+
+# ── Funcion con multiples parametros ─────────────────────
+haga suma(luka a, luka b) {
+    vuelva a + b;
+}
+
+haga calcular(luka base, vuelto factor, firme redondear) {
+    vuelva base;
+}
+
+# ── Funcion recursiva: factorial ──────────────────────────
+haga factorial(luka n) {
+    si_ve (n <= 1) {
+        vuelva 1;
+    }
+    vuelva n * factorial(n - 1);
+}
+
+# ── Funcion recursiva: fibonacci ──────────────────────────
+haga fibonacci(luka n) {
+    si_ve (n <= 0) {
+        vuelva 0;
+    }
+    si_ve (n == 1) {
+        vuelva 1;
+    }
+    vuelva fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+# ── Sobrecarga sintactica: mismo nombre, distinto tipo ───
+haga procesar(luka x) {
+    vuelva x + 1;
+}
+
+haga procesar(frase s) {
+    vuelva 0;
+}
+
+# ── Funcion anidada (definida dentro de otra funcion) ────
+haga externa(luka x) {
+    haga interna(luka y) {
+        vuelva y * 2;
+    }
+    vuelva interna(x) + 1;
+}
+
+# ── Sentencias de uso ─────────────────────────────────────
+luka r1 = factorial(10);
+luka r2 = fibonacci(8);
+luka r3 = suma(3, 4);
+firme ok = negar(firme_no);
+
+# ── Llamada con argumentos nombrados ─────────────────────
+luka r4 = calcular(base: 10, factor: 2.5, redondear: firme_si);
+
+# ── Llamada de funcion dentro de expresion ────────────────
+luka r5 = factorial(5) + fibonacci(3) * 2;
+firme cond = factorial(3) > 0 y_es r1 < 100;
+
+# ── print y input ─────────────────────────────────────────
+diga(r1);
+diga(r5);
+diga("resultado calculado");
+diga();
+responda("Ingresa un numero: ");
+responda();
+
+# ── return sin valor ──────────────────────────────────────
+haga nada() {
+    si_ve (firme_si) {
+        vuelva;
+    }
+}
+
+# ── ERROR SINTACTICO: llamada sin cerrar parentesis ───────
+# La siguiente linea esta comentada porque genera error:
+# luka mal = factorial(5;
+# Error esperado: "Error sintactico en linea N: syntax error"
+# porque falta el ) de cierre antes del ;
