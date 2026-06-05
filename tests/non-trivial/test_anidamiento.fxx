@@ -1,0 +1,129 @@
+# test_anidamiento — estructuras profundamente anidadas sin limite de profundidad
+# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
+#
+# Verifica que la gramatica LALR(1) acepta anidamiento arbitrario de
+# if/else, while, for, switch, ensaye y expresiones parenteticas profundas.
+# LF_Final.md: "cada estructura pueda anidarse sin ambiguedad"
+
+luka x = 5;
+luka y = 3;
+firme modo = firme_si;
+
+# Nivel 3: for -> while -> if -> if/else
+dele (luka i = 0; i < 10; i = i + 1) {
+    siga_pues (x > 0) {
+        si_ve (i % 2 == 0) {
+            si_ve (x > 3) {
+                diga("par y grande");
+            } o_si_no {
+                si_ve (x == 3) {
+                    diga("par y medio");
+                } o_si_no {
+                    diga("par y chico");
+                }
+            }
+        } o_si_no {
+            diga("impar");
+        }
+        x = x - 1;
+    }
+}
+
+# Nivel 3: if -> for -> switch
+si_ve (modo) {
+    dele (luka j = 0; j < y; j = j + 1) {
+        segun (j) {
+            toca 0: diga("cero");
+            toca 1: diga("uno");
+            toca 2: {
+                diga("dos");
+                luka tmp = j * 2;
+                diga(tmp);
+            }
+        }
+    }
+}
+
+# Nivel 3: while -> for -> ensaye
+siga_pues (y > 0) {
+    dele (luka k = 0; k < y; k = k + 1) {
+        ensaye {
+            cuadre(k >= 0, "k invalido");
+            diga(k);
+        } ojo_pues (frase e) {
+            diga(e);
+            paila e;
+        }
+    }
+    y = y - 1;
+}
+
+# Nivel 5: funcion -> if -> for -> ensaye -> if -> switch
+haga proceso_completo(luka n, firme verificar) {
+    si_ve (verificar) {
+        dele (luka i = 0; i < n; i = i + 1) {
+            ensaye {
+                cuadre(i >= 0, "indice invalido");
+                si_ve (i % 2 == 0) {
+                    segun (i % 3) {
+                        toca 0: diga("div por 6");
+                        toca 2: diga("resto 2");
+                    }
+                } o_si_no {
+                    siga_pues (i > 0) {
+                        luka tmp = i - 1;
+                        diga(tmp);
+                        i = i - 1;
+                    }
+                }
+            } ojo_pues (e) {
+                paila;
+            }
+        }
+    } o_si_no {
+        vuelva;
+    }
+    vuelva n;
+}
+
+# Switch con bloques multisentencia en cada caso
+segun (x) {
+    toca 0: {
+        luka a = 1;
+        luka b = 2;
+        diga(a + b);
+    }
+    toca 1: {
+        si_ve (y > 0) {
+            siga_pues (y > 0) {
+                y = y - 1;
+            }
+        }
+    }
+    toca 2: {
+        dele (luka m = 0; m < 3; m = m + 1) {
+            diga(m);
+        }
+    }
+}
+
+# Expresiones con parentesis profundos y operadores mixtos
+luka e1 = ((x + y) * (x - y)) ^ 2;
+luka e2 = (x + (y * (x - (y + 1))));
+firme c1 = (x > 0 y_es y > 0) o_bien (no_es (x == 0) y_es no_es (y == 0));
+firme c2 = no_es (no_es (x > 0 y_es y > 0));
+firme c3 = (x > 0 y_es (y > 0 o_bien x == 5)) y_es no_es (x < 0 o_bien y < 0);
+
+# Reductores con expresiones anidadas como argumento
+luka r1 = sume([x * 2, y + 1, (x + y) * 3, x ^ 2]);
+luka r2 = el_mas([x * y, (x + y) * 2, x ^ 2 + y ^ 2]);
+firme r3 = sume([1, 2, 3]) > 0 y_es el_mas([x, y, x + y]) < 100;
+
+# Acceso a campo en expresiones anidadas
+parche tabla;
+luka dim = tabla.filas + tabla.columnas;
+luka val = tabla.get(x * 2);
+luka nested = tabla.get(tabla.filas - 1);
+
+# Llamada de funcion como argumento de otra llamada
+luka res = proceso_completo(sume([1, 2, 3]), es_par(4));

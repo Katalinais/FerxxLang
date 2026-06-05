@@ -1,0 +1,13 @@
+# test_error_sintactico_02 — bloque de funcion sin cerrar (falta } de cierre)
+# ESPERADO: Error sintactico en linea 14: syntax error  (exit 1)
+# RAZON: haga funcion_incompleta abre { pero nunca lo cierra;
+#        el si_ve interno tambien queda abierto.
+#        El parser llega al EOF dentro del bloque anidado
+#        y no puede reducir ninguna regla -> syntax error.
+
+luka x = 5;
+
+haga funcion_incompleta(luka n) {
+    si_ve (n > 0) {
+        diga(n);
+

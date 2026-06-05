@@ -1,0 +1,118 @@
+# test_overloading — sobrecarga sintactica de funciones
+# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
+#
+# Verifica que el parser acepta multiples definiciones haga con el mismo
+# nombre diferenciadas por tipo del primer parametro o numero de parametros.
+# La sobrecarga es UNICAMENTE SINTACTICA: no hay tabla de simbolos, el
+# parser acepta todas las definiciones sin validar tipos.
+# LF_Final.md: "implementar una convencion para la sobrecarga basada en
+# tipo de parametros"
+
+# Sobrecarga por tipo del primer parametro: 5 variantes de procesar()
+haga procesar(luka n) {
+    vuelva n * 2;
+}
+
+haga procesar(vuelto f) {
+    vuelva f * 2.0;
+}
+
+haga procesar(frase s) {
+    diga(s);
+    vuelva 0;
+}
+
+haga procesar(firme b) {
+    si_ve (b) { vuelva 1; }
+    vuelva 0;
+}
+
+haga procesar(combo v) {
+    vuelva sume(v);
+}
+
+# Sobrecarga por numero de parametros: combinar con 2, 3 y 4 argumentos
+haga combinar(luka a, luka b) {
+    vuelva a + b;
+}
+
+haga combinar(luka a, luka b, luka c) {
+    vuelva a + b + c;
+}
+
+haga combinar(luka a, luka b, luka c, luka d) {
+    vuelva a + b + c + d;
+}
+
+# Sobrecarga con tipo compuesto como primer parametro
+haga transformar(combo v) {
+    vuelva sume(v);
+}
+
+haga transformar(parche m) {
+    luka f = m.filas;
+    vuelva f * m.columnas;
+}
+
+haga transformar(fila lista) {
+    vuelva el_menos(lista);
+}
+
+# Sobrecarga con orden inverso de parametros
+haga mezclar(luka n, frase s) {
+    diga(s);
+    vuelva n;
+}
+
+haga mezclar(frase s, luka n) {
+    diga(s);
+    vuelva n;
+}
+
+haga mezclar(luka a, luka b, frase sep) {
+    diga(sep);
+    vuelva a + b;
+}
+
+# Sobrecarga donde una variante es recursiva
+haga suma_cero(luka n) {
+    si_ve (n <= 0) { vuelva 0; }
+    vuelva n + suma_cero(n - 1);
+}
+
+haga suma_cero(vuelto f) {
+    si_ve (f <= 0.0) { vuelva 0; }
+    vuelva 1;
+}
+
+# Sobrecarga de funcion anidada dentro de otra funcion
+haga contenedor(luka tipo) {
+    haga hacer_algo(luka x) {
+        vuelva x + 1;
+    }
+    haga hacer_algo(frase s) {
+        diga(s);
+        vuelva 0;
+    }
+    si_ve (tipo == 1) {
+        vuelva hacer_algo(tipo);
+    }
+    vuelva hacer_algo("tipo desconocido");
+}
+
+# Invocaciones — el parser acepta todas sin validar tipos
+luka r1 = procesar(10);
+luka r2 = combinar(1, 2);
+luka r3 = combinar(1, 2, 3);
+luka r4 = combinar(1, 2, 3, 4);
+luka r5 = suma_cero(10);
+luka r6 = contenedor(1);
+
+# Llamada con argumentos nombrados en version sobrecargada
+luka r7 = mezclar(n: 5, s: "hola");
+luka r8 = combinar(a: 1, b: 2, c: 3);
+
+diga(r1);
+diga(r2);
+diga(r3);
+diga(r4);

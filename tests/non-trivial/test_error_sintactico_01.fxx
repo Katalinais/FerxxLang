@@ -1,0 +1,11 @@
+# test_error_sintactico_01 — falta punto y coma al final de declaracion
+# ESPERADO: Error sintactico en linea 11: syntax error  (exit 1)
+# RAZON: la gramatica exige SEMI al final de toda declaracion.
+#        El parser detecta el error al leer el siguiente token (INT/luka)
+#        despues del LIT_INT 40, cuando esperaba SEMI.
+
+luka x = 10;
+luka y = 20;
+
+luka z = 40
+luka w = 50;

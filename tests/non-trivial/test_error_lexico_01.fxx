@@ -1,0 +1,11 @@
+# test_error_lexico_01 — caracter $ no pertenece al vocabulario FerxxLang
+# ESPERADO:
+#   Error lexico en linea 10: '$'   (emitido por la regla catch-all del lexer)
+#   Error sintactico en linea 10: syntax error  (por expresion malformada)
+# SALIDA: exit 1
+# RAZON: $ no coincide con ninguna regla de lexico.l; la accion catch-all
+#        lo imprime en stderr y lo descarta. Al descartarlo, el parser
+#        recibe SEMI cuando esperaba expr despues de ASSIGN -> syntax error.
+
+luka x = $;
+luka y = 10;

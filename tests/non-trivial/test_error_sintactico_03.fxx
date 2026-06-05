@@ -1,0 +1,8 @@
+# test_error_sintactico_03 — llamada de funcion con parentesis sin cerrar
+# ESPERADO: Error sintactico en linea 7: syntax error  (exit 1)
+# RAZON: "suma(1, 2" no tiene ) de cierre.
+#        El parser recibe SEMI cuando esperaba RPAREN o COMMA
+#        al final de lista_args -> syntax error.
+
+luka resultado = suma(1, 2;
+luka otro = 5;

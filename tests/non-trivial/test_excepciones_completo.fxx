@@ -1,0 +1,185 @@
+# test_excepciones_completo — cobertura exhaustiva del manejo de excepciones
+# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
+#
+# Verifica: try/catch (con y sin tipo), throw simple y con expr,
+# assert con y sin mensaje, anidamiento de try, try en recursion,
+# try en for/while/if, combinaciones con reductores y colecciones.
+# LF_Final.md: "Disenar estructuras para try-catch y validaciones tipo assert.
+# El parser debe diferenciar errores sintacticos de constructos invalidos."
+
+# ── try/catch sin tipo en la variable de catch ────────────────
+ensaye {
+    luka x = 10;
+    diga(x);
+} ojo_pues (e) {
+    diga("error capturado sin tipo");
+}
+
+# ── try/catch con tipo frase en la variable de catch ──────────
+ensaye {
+    luka y = 20;
+    cuadre(y > 0, "y debe ser positivo");
+} ojo_pues (frase err) {
+    diga(err);
+}
+
+# ── try/catch con tipo luka en la variable de catch ───────────
+ensaye {
+    luka z = 0;
+} ojo_pues (luka codigo) {
+    diga(codigo);
+}
+
+# ── throw con expresion entera ────────────────────────────────
+haga verificar_positivo(luka n) {
+    si_ve (n < 0) {
+        paila "valor negativo no permitido";
+    }
+    vuelva n;
+}
+
+# ── throw con expresion variable ─────────────────────────────
+haga lanzar_si_cero(luka n) {
+    si_ve (n == 0) {
+        paila n;
+    }
+    vuelva n;
+}
+
+# ── throw vacio: re-lanza la excepcion activa ─────────────────
+haga relanzar_siempre() {
+    ensaye {
+        luka a = 1;
+        cuadre(a > 0);
+    } ojo_pues (e) {
+        paila;
+    }
+}
+
+# ── assert sin mensaje ────────────────────────────────────────
+cuadre(1 > 0);
+cuadre(firme_si);
+cuadre(no_es firme_no);
+luka val = 42;
+cuadre(val > 0);
+cuadre(val != 0);
+
+# ── assert con mensaje string ─────────────────────────────────
+cuadre(1 == 1, "uno debe ser uno");
+cuadre(firme_si, "debe ser verdadero");
+cuadre(val > 0, "val debe ser positivo");
+cuadre(val != 0, "val no puede ser cero");
+cuadre(val < 100, "val debe ser menor a cien");
+
+# ── try/catch anidados profundidad 2 ─────────────────────────
+ensaye {
+    ensaye {
+        cuadre(firme_si, "falla interna");
+        paila "error anidado nivel 2";
+    } ojo_pues (frase e_inner) {
+        diga(e_inner);
+        paila e_inner;
+    }
+} ojo_pues (frase e_outer) {
+    diga(e_outer);
+}
+
+# ── try/catch anidados profundidad 3 ─────────────────────────
+ensaye {
+    ensaye {
+        ensaye {
+            luka deep = 0;
+            cuadre(deep >= 0);
+        } ojo_pues (e3) {
+            paila;
+        }
+    } ojo_pues (luka e2) {
+        paila e2;
+    }
+} ojo_pues (frase e1) {
+    diga(e1);
+}
+
+# ── try/catch dentro de funcion recursiva ────────────────────
+haga fact_seguro(luka n) {
+    ensaye {
+        cuadre(n >= 0, "n negativo");
+        si_ve (n <= 1) { vuelva 1; }
+        vuelva n * fact_seguro(n - 1);
+    } ojo_pues (frase e) {
+        diga(e);
+        vuelva -1;
+    }
+}
+
+# ── try/catch dentro de for ───────────────────────────────────
+dele (luka i = 0; i < 5; i = i + 1) {
+    ensaye {
+        cuadre(i >= 0, "i invalido");
+        diga(i);
+    } ojo_pues (frase e) {
+        diga(e);
+        paila;
+    }
+}
+
+# ── try/catch dentro de while ────────────────────────────────
+luka cnt = 3;
+siga_pues (cnt > 0) {
+    ensaye {
+        cuadre(cnt > 0, "contador agotado");
+        diga(cnt);
+    } ojo_pues (frase emsg) {
+        diga(emsg);
+    }
+    cnt = cnt - 1;
+}
+
+# ── combinacion: assert + paila + ensaye en if ────────────────
+si_ve (firme_si) {
+    ensaye {
+        cuadre(firme_si, "condicion inicial valida");
+        dele (luka k = 0; k < 3; k = k + 1) {
+            si_ve (k > 1) {
+                paila "limite superado";
+            }
+            diga(k);
+        }
+    } ojo_pues (frase e) {
+        diga(e);
+    }
+}
+
+# ── try con reductores y literales de coleccion ───────────────
+ensaye {
+    combo nums = [1, 2, 3, 4, 5];
+    luka s = sume(nums);
+    luka m = el_mas(nums);
+    cuadre(s > 0, "suma debe ser positiva");
+    cuadre(m > 0, "maximo debe ser positivo");
+    diga(s);
+    diga(m);
+} ojo_pues (frase err) {
+    diga(err);
+}
+
+# ── funcion con manejo de excepciones y parametros nombrados ──
+haga division_segura(luka a, luka b) {
+    ensaye {
+        cuadre(b != 0, "divisor cero no permitido");
+        vuelva a / b;
+    } ojo_pues (frase err) {
+        diga(err);
+        vuelva 0;
+    }
+}
+
+# Invocaciones finales
+luka p1 = verificar_positivo(5);
+luka p2 = lanzar_si_cero(3);
+luka p3 = fact_seguro(7);
+luka p4 = division_segura(a: 10, b: 2);
+diga(p1);
+diga(p2);
+diga(p3);
+diga(p4);

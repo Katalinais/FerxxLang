@@ -1,0 +1,111 @@
+# test_shadowing — variable shadowing en bloques anidados
+# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
+#
+# Verifica que el parser acepta la re-declaracion del mismo identificador
+# en bloques internos, con o sin cambio de tipo.
+# LF_Final.md: "Los bloques internos deben permitir declaraciones locales de
+# variables que utilicen el mismo identificador que variables previamente
+# declaradas en bloques externos (variable shadowing)."
+
+# Variables en el ambito global
+luka x = 10;
+frase nombre = "global";
+vuelto pi = 3.14;
+firme activo = firme_si;
+
+# Shadowing nivel 1 — dentro de un if
+si_ve (x > 0) {
+    luka x = 20;
+    frase nombre = "local_if";
+    diga(x);
+    diga(nombre);
+}
+diga(x);
+
+# Shadowing nivel 1 — dentro de bloque anonimo
+{
+    luka x = 100;
+    diga(x);
+}
+diga(x);
+
+# Shadowing triple: tres niveles anidados del mismo identificador
+{
+    luka x = 100;
+    {
+        luka x = 200;
+        {
+            luka x = 300;
+            diga(x);
+        }
+        diga(x);
+    }
+    diga(x);
+}
+
+# Shadowing con cambio de tipo en cascada: luka -> vuelto -> frase
+{
+    luka x = 1;
+    {
+        vuelto x = 3.14;
+        {
+            frase x = "ahora soy frase";
+            diga(x);
+        }
+        diga(x);
+    }
+    diga(x);
+}
+
+# Shadowing en while: el cuerpo del bucle re-declara la variable de control
+luka contador = 5;
+siga_pues (contador > 0) {
+    luka contador = contador - 1;
+    diga(contador);
+}
+
+# Shadowing en for: la variable i del for se sombrea dentro del cuerpo
+dele (luka i = 0; i < 5; i = i + 1) {
+    luka i = i * 10;
+    diga(i);
+}
+
+# Shadowing en funcion: el parametro se sombrea con declaracion local
+haga duplicar(luka n) {
+    luka n = n * 2;
+    {
+        vuelto n = 1.5;
+        diga(n);
+    }
+    vuelva n;
+}
+
+# Shadowing de resultado intermedio en ramas if/else
+haga calcular(luka base, luka exp) {
+    luka resultado = base ^ exp;
+    si_ve (resultado > 100) {
+        luka resultado = resultado - 100;
+        diga(resultado);
+    } o_si_no {
+        luka resultado = resultado + 1;
+        diga(resultado);
+    }
+    vuelva resultado;
+}
+
+# Shadowing con tipo compuesto
+{
+    combo nums = [1, 2, 3];
+    {
+        fila nums = ["a", "b", "c"];
+        diga(nums[0]);
+    }
+    luka s = sume(nums);
+    diga(s);
+}
+
+# Invocaciones finales
+luka r1 = duplicar(5);
+luka r2 = calcular(2, 10);
+diga(r1);
+diga(r2);

@@ -1,0 +1,109 @@
+# test_recursion — invocaciones recursivas directas, mutuas y combinadas
+# ESPERADO: ✓ Analisis sintactico exitoso  (exit 0)
+#
+# Verifica que la gramatica libre de contexto acepta recursion directa,
+# mutual y anidada en expresiones complejas.
+# LF_Final.md: "Las funciones deben poder invocarse recursivamente desde su
+# propio cuerpo, lo cual implica construir una gramatica libre de contexto
+# que permita esa recursividad."
+
+# Recursion directa clasica: factorial  n!
+haga factorial(luka n) {
+    si_ve (n <= 1) {
+        vuelva 1;
+    }
+    vuelva n * factorial(n - 1);
+}
+
+# Recursion directa con dos llamadas: fibonacci
+haga fibonacci(luka n) {
+    si_ve (n <= 0) { vuelva 0; }
+    si_ve (n == 1) { vuelva 1; }
+    vuelva fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+# Recursion con acumulador (forma iterativa-recursiva)
+haga fact_acc(luka n, luka acc) {
+    si_ve (n <= 1) { vuelva acc; }
+    vuelva fact_acc(n - 1, n * acc);
+}
+
+# Recursion mutual: es_par llama a es_impar y viceversa
+# El parser acepta la referencia hacia adelante porque no hay tabla de simbolos.
+haga es_par(luka n) {
+    si_ve (n == 0) { vuelva firme_si; }
+    vuelva es_impar(n - 1);
+}
+
+haga es_impar(luka n) {
+    si_ve (n == 0) { vuelva firme_no; }
+    vuelva es_par(n - 1);
+}
+
+# Recursion con estructura de control interna (potencia por cuadrado rapido)
+haga potencia(luka base, luka exp) {
+    si_ve (exp == 0) { vuelva 1; }
+    si_ve (exp % 2 == 0) {
+        luka mitad = potencia(base, exp / 2);
+        vuelva mitad * mitad;
+    }
+    vuelva base * potencia(base, exp - 1);
+}
+
+# Recursion con parametros de tipo compuesto
+haga suma_recursiva(combo arr, luka idx, luka tope) {
+    si_ve (idx >= tope) { vuelva 0; }
+    vuelva arr[idx] + suma_recursiva(arr, idx + 1, tope);
+}
+
+# Recursion dentro de try/catch — cada nivel tiene su propio manejador
+haga factorial_seguro(luka n) {
+    ensaye {
+        cuadre(n >= 0, "n no puede ser negativo");
+        si_ve (n <= 1) { vuelva 1; }
+        vuelva n * factorial_seguro(n - 1);
+    } ojo_pues (frase e) {
+        diga(e);
+        vuelva -1;
+    }
+}
+
+# Funcion anidada que se llama recursivamente (helper recursivo)
+haga wrapper(luka n) {
+    haga helper(luka x) {
+        si_ve (x == 0) { vuelva 1; }
+        vuelva x * helper(x - 1);
+    }
+    vuelva helper(n);
+}
+
+# Recursion dentro de bucle for
+haga tabla_factorial(luka limite) {
+    dele (luka i = 1; i <= limite; i = i + 1) {
+        luka fi = factorial(i);
+        diga(fi);
+    }
+}
+
+# Invocaciones directas
+luka r1 = factorial(5);
+luka r2 = fibonacci(10);
+luka r3 = fact_acc(7, 1);
+firme p4 = es_par(8);
+firme p5 = es_impar(7);
+luka r6 = potencia(2, 10);
+luka r7 = factorial_seguro(6);
+luka r8 = wrapper(4);
+
+# Recursion en expresiones complejas con operadores combinados
+luka expr1 = factorial(5) + fibonacci(6) * potencia(2, 3);
+firme cond1 = factorial(3) > 0 y_es es_par(factorial(4));
+luka expr2 = sume([factorial(1), factorial(2), factorial(3), factorial(4)]);
+
+# Recursion con argumentos nombrados
+luka r9 = calcular_n(base: 2, exp: 8);
+
+diga(r1);
+diga(r2);
+diga(expr1);
+diga(cond1);
